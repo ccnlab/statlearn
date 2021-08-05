@@ -797,7 +797,6 @@ func (we *WEEnv) LoadTimitSeqsAndTimes(fn string) error {
 // We need this because we only collect stats every 100ms and with the absolute times
 // you can miss whole CVs if under 100ms (rare) but also we don't want to miss the first
 // segment of a CV if 70% of the 100 ms is the first segment.
-// Todo: is 70% the best division point? Yes seems to be good
 func (we *WEEnv) AdjustCVTime(v float64, start bool) float64 {
 	vadj := 0.0
 	vrem := v*10 - math.Floor(v*10)

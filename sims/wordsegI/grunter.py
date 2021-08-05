@@ -44,10 +44,10 @@ cpus_per_task = 4
 tasks_per_node = 1
 
 # qos is the queue name
-qos = "blanca-ccn"
+qos = "oreillylab"
 
 # qos short is short name for queue if name is cutoff
-qos_short = "ccn"
+qos_short = "oreillyl"
 
 # in other cases, you might have to specify a partition
 # partition = "low"
