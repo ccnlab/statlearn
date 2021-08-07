@@ -1,6 +1,6 @@
 module github.com/ccnlab/statlearn
 
-go 1.16
+go 1.15
 
 require (
 	github.com/emer/auditory v0.0.0-20210803042306-bba410c610cd
