@@ -31,13 +31,13 @@ import getpass
 hours = 6
 
 # memory per task
-mem = "8G"
+mem = "3G"
 
 # number of mpi "tasks" (procs in MPI terminology)
 tasks = 1
 
 # number of cpu cores (threads) per task
-cpus_per_task = 4
+cpus_per_task = 1
 
 # how to allocate tasks within compute nodes
 # cpus_per_task * tasks_per_node <= total cores per node
@@ -53,7 +53,7 @@ qos_short = "oreillyl"
 # partition = "low"
 
 # default array settings, settings of runniing the same job multiple times in parallel. E.g. 10 runs in parallel
-array = "0-9"
+array = "0-24"
 
 # number of emergent runs per array job
 runs = 1
@@ -164,8 +164,8 @@ def write_sbatch_header(f):
     f.write("#SBATCH --ntasks=" + str(tasks) + "\n")
     f.write("#SBATCH --cpus-per-task=" + str(cpus_per_task) + "\n")
     f.write("#SBATCH --ntasks-per-node=" + str(tasks_per_node) + "\n")
-    f.write("#SBATCH --qos=" + qos + "\n")
-    #f.write("#SBATCH --partition=" + partition + "\n")
+ #   f.write("#SBATCH --qos=" + qos + "\n")
+ #   f.write("#SBATCH --partition=" + partition + "\n")
     f.write("#SBATCH --mail-type=FAIL\n")
     f.write("#SBATCH --mail-user=" + grunt_user + "\n")
     # these might be needed depending on environment in head node vs. compute nodes
@@ -187,7 +187,7 @@ def write_sbatch_setup():
     ####### This is custom to the job you are running
 
     f.write("date -u '+%Y-%m-%d %T %Z' > job.start\n")
-    f.write("ln -s  /pl/active/ccnlab/ccn_images ccn_images\n")
+    f.write("ln -s  /home/rohrlich/ccn_images ccn_images\n")
     f.write("export GO111MODULE=on\n")
     f.write("go build\n")  # add anything here needed to prepare code. This part will only be executed by the first array job
 
@@ -268,7 +268,7 @@ def submit():
     slurmid_cleanup = sbatch_submit("job.cleanup.sbatch")
 
 
-    print("submitted successfully -- slurm job id: " + slurmid_array)
+ #   print("submitted successfully -- slurm job id: " + slurmid_array)
 
 def results():
     # important: update this to include any results you want to add to results repo
@@ -383,18 +383,18 @@ def queue():
     ts = timestamp_local(datetime.now(timezone.utc))
     qout = ["queue at: " + ts + "\n", "sinfo on: " + qos + "\n"]
     for r in res:
-        if qos in r:   # filter by qos
+ #       if qos in r:   # filter by qos
             qout.append(r)
 
-    qout.append("\nsqueue -p " + qos + "\n")
-    try:
-        result = subprocess.check_output(["squeue", "-p", qos], universal_newlines=True)
-    except subprocess.CalledProcessError:
-        print("Failed to run squeue")
-    res = result.splitlines()
-    for r in res:
-        if qos_short in r:  # doesn't fit full qos
-            qout.append(r)
+#     qout.append("\nsqueue -p " + qos + "\n")
+#     try:
+#         result = subprocess.check_output(["squeue", "-p", qos], universal_newlines=True)
+#     except subprocess.CalledProcessError:
+#         print("Failed to run squeue")
+#     res = result.splitlines()
+#     for r in res:
+#         if qos_short in r:  # doesn't fit full qos
+#             qout.append(r)
 
     qout.append("\nsqueue -u " + grunt_user + "\n")
     try:
@@ -403,7 +403,7 @@ def queue():
         print("Failed to run squeue")
     res = result.splitlines()
     for r in res:
-        if qos_short in r:  # doesn't fit full qos
+#         if qos_short in r:  # doesn't fit full qos
             qout.append(r)
 
     write_string("job.queue", "\n".join(qout))
