@@ -1,0 +1,349 @@
+---
+title: "Simulation_SaffranAslinNewport96"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+  html_notebook:
+    code_folding: show
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = "/Users/rohrlich/go/src/github.com/ccnlab/lang-acq/data/Saffran/")
+```
+### Load Libraries
+```{r}
+library(Matrix)
+library(lme4)
+library(emmeans)
+library(ggplot2)
+library(dplyr)
+library(psych)
+```
+### Terminology
+In-Word - the transition between syllables within a word - 100% predictable for the data in this simulation
+
+Next-Word - the transition between syllables within a word - 33% predictable for the data in this simulation
+
+### Factors
+run - equivalent to a subject as each run starts with a different random seed - treated as a random effect
+
+phase - pretrain/test or train/test
+
+epoch - each epoch we average the values from the trial data
+
+layer - a representation of the neurons of a brain area 
+
+condition - whether the syllable transition is "in-word" or "to next-word"
+
+cosine - the cosine value for the run/epoch/condition (the independent variable)
+
+## ---------------------------------------------
+### Import
+### Pretraining Test Data
+```{r}
+saffranPretrain.df <- read.table("roh002319/WordSeg_0-24_preTstEpcTidy.tsv", header=FALSE, sep="\t")
+saffranPretrain.df <- setNames(saffranPretrain.df, c("run","phase","epoch","layer","condition", "cosine"))
+```
+### Training Test Data
+```{r}
+saffranPostPretrain.df <- read.table("roh002319/WordSeg_0-24_tstEpcTidy.tsv", header=FALSE, sep="\t")
+saffranPostPretrain.df <- setNames(saffranPostPretrain.df, c("run","phase","epoch","layer","condition", "cosine"))
+```
+### Pretraining and Training Test Data
+```{r}
+saffranPrePostTrain.df <- read.table("roh002319/WordSeg_0-24_prePostTstEpcTidy.tsv", header=FALSE, sep="\t")
+saffranPrePostTrain.df <- setNames(saffranPrePostTrain.df, c("run","phase","epoch","layer","condition", "cosine"))
+```
+### Add a cosine dissimilarity column (1 - cosine)
+```{r}
+saffranPostPretrain.df$cosinedissim = 1 - saffranPostPretrain.df$cosine 
+# View(saffranPrePostTrain.df)
+```
+### Pretraining - Boxplot condition X epoch
+```{r}
+v1 = c(1.5, 3.5, 5.5, 7.5, 9.5)
+    v2 = c("10",  "20", "30", "40", "50")
+    boxplot(cosine ~ condition*epoch, data=saffranPretrain.df,
+        xlab = "Epoch",
+        ylab = "Cosine Similarity",
+        ylim = range(0.0:1.0),
+        col = c("#3399ff", "#ff3333"), # websafe
+        xaxt="n"
+        )
+legend("bottomright", legend = c("In-Word", "Next-Word"),
+       col = c("#3399ff", "#ff3333"), # websafe
+       pch=15, bty="n", pt.cex=2, horiz=F, inset=c(0.0, 0.80)
+       )
+axis(side=1, at = v1, labels=v2)
+```
+## ---------------------------------------------
+## Pretrained Network
+### Training (after pre) Boxplot condition X epoch
+```{r}
+v1 = c(1.5, 3.5, 5.5, 7.5, 9.5, 11.5, 13.5, 15.5, 17.5, 19.5)
+    v2 = c("1",  "2", "3", "4", "5", "6", "7", "8", "9", "10")
+    boxplot(cosine ~ condition*epoch, data=saffranPostPretrain.df,
+        xlab = "Epoch",
+        ylab = "Cosine Similarity",
+        ylim = range(0.0:1.0),
+        col = c("#3399ff", "#ff3333"), # websafe
+        xaxt="n"
+        )
+legend("bottomright", legend = c("In-Word", "Next-Word"),
+       col = c("#3399ff", "#ff3333"), # websafe
+       pch=15, bty="n", pt.cex=2, horiz=F, inset=c(0.0, 0.0)
+       )
+abline(v=10.5, col="black", lty=2)
+arrows(x0=12.5, y0=.8, x1=10.7, y1=.8, length=0.1)
+text(x=12.7, y=.8, labels="End of infant training", pos=4)
+axis(side=1, at = v1, labels=v2)
+```
+## ---------------------------------------------
+### plot of pretest and test together
+### Boxplot condition X epoch
+```{r}
+v1 = c(1.5, 3.5, 5.5, 7.5, 9.5, 11.5, 13.5, 15.5, 17.5, 19.5, 21.5, 23.5, 25.5, 27.5, 29.5)
+    v2 = c("10",  "20", "30", "40", "50", "1",  "2", "3", "4", "5", "6", "7", "8", "9", "10")
+    boxplot(cosine ~ condition*epoch, data=saffranPrePostTrain.df,
+        xlab = "Epoch",
+        ylab = "Cosine Similarity",
+        ylim = range(0.0:1.0),
+        col = c("#3399ff", "#ff3333"), # websafe
+        xaxt="n"
+        )
+legend("bottomright", legend = c("In-Word", "Next-Word"),
+       col = c("#3399ff", "#ff3333"), # websafe
+       pch=15, bty="n", pt.cex=2, horiz=F, inset=c(0.0, 0.0)
+       )
+abline(v=10.5, col="black", lty=1)
+text(x=5, y=.9, labels="pretraining", pos=1)
+abline(v=20.5, col="black", lty=2)
+arrows(x0=22.5, y0=.8, x1=20.7, y1=.8, length=0.1)
+text(x=22.7, y=.8, labels="     end of\ninfant training", pos=4)
+axis(side=1, at = v1, labels=v2, cex.axis=1.0)
+```
+### Boxplot condition X layer
+```{r}
+v1 = c(1.5, 3.5, 5.5, 7.5, 9.5)
+v2 = c("CB", "CPB", "RB", "RPB", "STS")
+boxplot(cosine ~ condition*layer, data=saffranPostPretrain.df,
+        xlab = "Layer",
+        ylab = "Cosine Similarity",
+        ylim = range(0.0:1.0),
+        xaxt="n",
+        col = c("#3399ff", "#ff3333") # websafe
+        )
+legend("bottomright", legend = c("In-Word", "Next-Word"),
+       col = c("#3399ff", "#ff3333"), # websafe
+       pch=15, bty="n", pt.cex=2, horiz=F, inset=c(0.0, 0.0)
+       )
+axis(side=1, at = v1, labels=v2)
+```
+## Pretrained Network - Mixed Model Analysis
+### Full Model with within factors epoch, layer, condition
+```{r}
+saffranPretrained.model_simple = lmer(cosine ~ epoch + layer + condition + (1|run), data=saffranPostPretrain.df, REML=FALSE)
+summary(saffranPretrained.model_simple)
+```
+### Reduced Model - no condition factor
+```{r}
+saffranPretrained.model_nocondition = lmer(cosine ~ epoch + layer + (1|run), data=saffranPostPretrain.df, REML=FALSE)
+summary(saffranPretrained.model_nocondition)
+```
+### Likelihood Ratio Test - full vs no condition factor (i.e. in-word vs next-word)
+```{r}
+anova(saffranPretrained.model_simple, saffranPretrained.model_nocondition)
+```
+### Reduced Model - no epoch factor
+```{r}
+saffranPretrained.model_noepoch = lmer(cosine ~ condition + layer + (1|run), data=saffranPostPretrain.df, REML=FALSE)
+summary(saffranPretrained.model_noepoch)
+```
+### Likelihood Ratio Test - full vs no epoch factor
+```{r}
+anova(saffranPretrained.model_simple, saffranPretrained.model_noepoch)
+```
+### Full Model with condition x epoch interaction
+```{r}
+saffranPretrained.model_epoch_interaction = lmer(cosine ~ layer + epoch * condition + (1|run), data=saffranPostPretrain.df, REML=FALSE)
+summary(saffranPretrained.model_epoch_interaction)
+```
+### Reduced Model - no layer factor
+```{r}
+saffranPretrained.model_nolayer = lmer(cosine ~ condition + epoch + (1|run), data=saffranPostPretrain.df, REML=FALSE)
+summary(saffranPretrained.model_nolayer)
+```
+### Likelihood Ratio Test - full vs no layer factor
+```{r}
+anova(saffranPretrained.model_simple, saffranPretrained.model_nolayer)
+```
+## Pretrained Network - Interactions
+### Full Model with condition x layer interaction
+```{r}
+saffranPretrained.model_interaction = lmer(cosine ~ epoch + layer * condition + (1|run), data=saffranPostPretrain.df, REML=FALSE)
+summary(saffranPretrained.model_interaction)
+```
+### Likelihood Ratio Test - full additive vs full interaction
+```{r}
+anova(saffranPretrained.model_simple, saffranPretrained.model_interaction)
+```
+### Visualizing the Interaction (ggplot)
+```{r}
+p <- emmip(saffranPretrained.model_interaction,  condition ~ layer)
+p + theme(
+  panel.background = element_rect(fill = "white"),
+  text = element_text(size = 14),
+  axis.line = element_line(color = "black"),
+  legend.position = c(.20, .85),
+  legend.key = element_rect(fill = "white")
+) +
+  ylim(0.35, 0.60) +
+  xlab("Layer") +
+  ylab("Cosine Similarity") +
+  scale_color_manual(values = c("#3399ff", "#ff3333"))
+p
+```
+### Exploring the 2 axes of Auditory Cortex
+```{r}
+emm = emmeans(saffranPretrained.model_interaction, specs = ~ layer | condition)
+summary(emm)
+
+CB = c(1, 0, 0, 0, 0)
+CPB = c(0, 1, 0, 0, 0)
+RB = c(0, 0, 1, 0, 0)
+RPB = c(0, 0, 0, 1, 0)
+STS = c(0, 0, 0, 0, 1)
+
+contrast(emm, method = list("STS - CPB" = STS - CPB,
+                            "STS - RPB" = STS - RPB,
+                            "CPB - CB" = CPB - CB,
+                            "RPB - RB" = RPB - RB,
+                            "RPB - CPB" = RPB - CPB,
+                            "RB - CB" = RB - CB))
+```
+
+## --------------------------------------------
+## Pretraining Data  - Mixed Model Analysis
+### Full Model with within factors epoch, layer, condition
+```{r}
+saffranPre.model_simple = lmer(cosine ~ epoch + layer + condition + (1|run), data=saffranPretrain.df, REML=FALSE)
+summary(saffranPre.model_simple)
+```
+### Reduced Model - no condition factor
+```{r}
+saffranPre.model_nocondition = lmer(cosine ~ epoch + layer + (1|run), data=saffranPretrain.df, REML=FALSE)
+summary(saffranPre.model_nocondition)
+```
+### Pretrain - Likelihood Ratio Test - full vs no condition factor (i.e. in-word vs next-word)
+```{r}
+anova(saffranPre.model_simple, saffranPre.model_nocondition)
+```
+### Reduced Model - no epoch factor
+```{r}
+saffranPre.model_noepoch = lmer(cosine ~ layer + condition + (1|run), data=saffranPretrain.df, REML=FALSE)
+summary(saffranPre.model_noepoch)
+```
+### Pretrain - Likelihood Ratio Test - full vs no epoch factor
+```{r}
+anova(saffranPre.model_simple, saffranPre.model_noepoch)
+```
+## Original Saffran Experiment 2 Comparison with Simulation
+### Subset of Simulation Data: Epoch 5 Only (comparable training point)
+```{r}
+epoch5.df <- select(filter(saffranPostPretrain.df, epoch == 104),c(1:7))
+epoch5stats <- aggregate(epoch5.df$cosinedissim, by = list(cond = epoch5.df$condition), FUN = function(x) c(mean = mean(x), sd = sd(x), n = length(x)))
+epoch5stats <- do.call(data.frame, epoch5stats)
+epoch5stats$se <- epoch5stats$x.sd / sqrt(epoch5stats$x.n)
+```
+### Epoch 5 Data Only - full additive model
+```{r}
+saffranPretrainedEpoch5.model_simple = lmer(cosinedissim ~ layer + condition + (1|run), data=epoch5.df, REML=FALSE)
+summary(saffranPretrainedEpoch5.model_simple)
+```
+### Epoch 5 Data Only - reduced model - no condition factor
+```{r}
+saffranPretrainedEpoch5.model_nocondition = lmer(cosinedissim ~ layer + (1|run), data=epoch5.df, REML=FALSE)
+summary(saffranPretrainedEpoch5.model_nocondition)
+```
+### Likelihood Ratio Test - Epoch 5 data only - simple vs reduced no condition
+```{r}
+anova(saffranPretrainedEpoch5.model_simple, saffranPretrainedEpoch5.model_nocondition)
+```
+### Saffran Experiment 2 and Simulation Side by Side
+```{r}
+par(mfrow=c(1,2))
+
+# Saffran Experiment 2
+time <- c(6.77, 7.60)
+se <- c(0.44, 0.42)
+barplot(time,
+        ylim=c(0,11),
+        col = c("#3399ff", "#ff3333"), # websafe
+        names.arg = c("Whole-Word", "Part-Word"),
+        ylab = "Mean Listening Time (sec)",
+        xlab = "Infants"
+)
+
+wwbarctr = 0.70
+pwbarctr = 1.90
+len = .025
+segments(wwbarctr, time[1] - se[1], wwbarctr, time[1] + se[1], lwd=2)
+segments(wwbarctr - len, time[1] - se[1], wwbarctr + len, time[1] - se[1], lwd=2)
+segments(wwbarctr - len, time[1] + se[1], wwbarctr + len, time[1] + se[1], lwd=2)
+segments(pwbarctr, time[2] - se[2], pwbarctr, time[2] + se[2], lwd=2)
+segments(pwbarctr - len, time[2] - se[2], pwbarctr + len, time[2] - se[2], lwd=2)
+segments(pwbarctr - len, time[2] + se[2], pwbarctr + len, time[2] + se[2], lwd=2)
+
+# Simulation
+cs <- epoch5stats$x.mean
+cosineSim <- c(epoch5stats$x.mean[1], epoch5stats$x.mean[2])
+se <- c(epoch5stats$se[1], epoch5stats$se[2])
+barplot(cosineSim,
+        ylim=c(0.0, 0.7),
+        col = c("#3399ff", "#ff3333"), # websafe
+        names.arg = c("In-Word\n(Whole-Word)", "Next-Word\n(Part-Word)"),
+        ylab = "1 - Cosine Similarity",
+        xlab = "Simulation"
+)
+wwSimbarctr = 0.70
+pwSimbarctr = 1.90
+len = .025
+segments(wwSimbarctr, cosineSim[1] - se[1], wwSimbarctr, cosineSim[1] + se[1], lwd=2)
+segments(wwSimbarctr - len, cosineSim[1] - se[1], wwSimbarctr + len, cosineSim[1] - se[1], lwd=2)
+segments(wwSimbarctr - len, cosineSim[1] + se[1], wwSimbarctr + len, cosineSim[1] + se[1], lwd=2)
+segments(pwSimbarctr, cosineSim[2] - se[2], pwSimbarctr, cosineSim[2] + se[2], lwd=2)
+segments(pwSimbarctr - len, cosineSim[2] - se[2], pwSimbarctr + len, cosineSim[2] - se[2], lwd=2)
+segments(pwSimbarctr - len, cosineSim[2] + se[2], pwSimbarctr + len, cosineSim[2] + se[2], lwd=2)
+```
+<!-- ## Alternate Analysis with Layers split into Axes -->
+<!-- ### Pretraining Test Data -->
+<!-- ```{r} -->
+<!-- saffranPretrainAlt.df <- read.table("roh002300/WordSeg_0-24_preTstEpcTidy.tsv", header=FALSE, sep="\t") -->
+<!-- saffranPretrainAlt.df <- setNames(saffranPretrainAlt.df, c("run","phase","epoch","axis1","axis2", "condition", "cosine")) -->
+<!-- ``` -->
+<!-- ### Pretraining Test Data -->
+<!-- ```{r} -->
+<!-- saffranPostPretrainAlt.df <- read.table("roh002300/WordSeg_0-24_tstEpcTidy.tsv", header=FALSE, sep="\t") -->
+<!-- saffranPostPretrainAlt.df <- setNames(saffranPostPretrainAlt.df, c("run","phase","epoch","axis1","axis2","condition", "cosine")) -->
+<!-- ``` -->
+<!-- ### Pretraining Test Data -->
+<!-- ```{r} -->
+<!-- saffranPrePostTrainAlt.df <- read.table("roh002300/WordSeg_0-24_prePostTstEpcTidy.tsv", header=FALSE, sep="\t") -->
+<!-- saffranPrePostTrainAlt.df <- setNames(saffranPrePostTrainAlt.df, c("run","phase","epoch","axis1","axis2","condition", "cosine")) -->
+<!-- ``` -->
+<!-- ### Full Model with within factors epoch, layer, condition -->
+<!-- ```{r} -->
+<!-- saffranPretrainedAlt.model_simple = lmer(cosine ~ epoch + axis1 + axis2 + condition + (1|run), data=saffranPrePostTrainAlt.df, REML=FALSE) -->
+<!-- summary(saffranPretrainedAlt.model_simple) -->
+<!-- ``` -->
+<!-- ### Reduced Model - no condition factor -->
+<!-- ```{r} -->
+<!-- saffranPretrainedAlt.model_nocondition = lmer(cosine ~ epoch + axis1 + axis2 + (1|run), data=saffranPrePostTrainAlt.df, REML=FALSE) -->
+<!-- summary(saffranPretrainedAlt.model_nocondition) -->
+<!-- ``` -->
+<!-- ### Likelihood Ratio Test - full vs no condition factor (i.e. in-word vs next-word) -->
+<!-- ```{r} -->
+<!-- anova(saffranPretrainedAlt.model_simple, saffranPretrainedAlt.model_nocondition) -->
+<!-- ``` -->
