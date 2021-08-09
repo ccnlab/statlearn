@@ -214,7 +214,7 @@ func (we *WEEnv) InitSndShort() {
 	we.SndShort.Params.WinMs = 25
 	we.SndShort.Params.StepMs = 10
 	we.SndShort.Params.StrideMs = 100
-	we.SndShort.Params.BorderSteps = 6
+	we.SndShort.Params.BorderSteps = 5
 
 	// for example, with Stride/StepMs equal to 10 and 3 border steps on either side there will be 16 values for the gabor stepping to cover
 	// so the gbor (size of 6) will go from 0-5, 2-7, 4-9 ... 10-15
@@ -227,8 +227,8 @@ func (we *WEEnv) InitSndShort() {
 
 	g := new(agabor.Params)
 	g.Defaults()
-	g.TimeSize = 6
-	g.TimeStride = 4
+	g.TimeSize = 10
+	g.TimeStride = 3
 	g.FreqSize = 6
 	g.FreqStride = 3
 	g.WaveLen = 6.0
@@ -262,7 +262,7 @@ func (we *WEEnv) InitSndLong() {
 	we.SndLong.Params.WinMs = 25
 	we.SndLong.Params.StepMs = 10
 	we.SndLong.Params.StrideMs = 100
-	we.SndLong.Params.BorderSteps = 5
+	we.SndLong.Params.BorderSteps = 6
 	// with SegmentMs/StepMs equal to 30 and 6 border steps on either side there will be 42 values for the gabor stepping to cover
 	// so the gbor (size of 8) will go from 0-7, 3-10, 6-13 ... 33-40
 	// for a time size of 10 the border steps needs to go to 7, etc.
@@ -275,8 +275,8 @@ func (we *WEEnv) InitSndLong() {
 
 	g := new(agabor.Params)
 	g.Defaults()
-	g.TimeSize = 10
-	g.TimeStride = 3
+	g.TimeSize = 6
+	g.TimeStride = 4
 	g.FreqSize = 6
 	g.FreqStride = 3
 	g.WaveLen = 6.0
@@ -797,6 +797,7 @@ func (we *WEEnv) LoadTimitSeqsAndTimes(fn string) error {
 // We need this because we only collect stats every 100ms and with the absolute times
 // you can miss whole CVs if under 100ms (rare) but also we don't want to miss the first
 // segment of a CV if 70% of the 100 ms is the first segment.
+// Todo: is 70% the best division point? Yes seems to be good
 func (we *WEEnv) AdjustCVTime(v float64, start bool) float64 {
 	vadj := 0.0
 	vrem := v*10 - math.Floor(v*10)

@@ -155,7 +155,7 @@ func (wn *WordNet) Config() {
 
 	// belt (B)
 	cbs, cbct, cbth := net.AddDeep4D("CB", 5, 4, 5, 5)
-	cbth.Shape().SetShape([]int{5, 4, 3, 5}, nil, nil) // 2 x 7 units more sensible but 3 x 5 better visually
+	cbth.Shape().SetShape([]int{5, 4, 2, 7}, nil, nil)
 	cbth.(*deep.TRCLayer).Drivers.Add("A1")
 	cbs.SetClass("CB")
 	cbct.SetClass("CB")
@@ -165,7 +165,7 @@ func (wn *WordNet) Config() {
 	cbth.SetName("CBTh")
 
 	rbs, rbct, rbth := net.AddDeep4D("RB", 5, 4, 5, 5)
-	rbth.Shape().SetShape([]int{5, 4, 3, 5}, nil, nil) // 2 x 7 units more sensible but 3 x 5 better visually
+	rbth.Shape().SetShape([]int{5, 4, 2, 7}, nil, nil)
 	rbth.(*deep.TRCLayer).Drivers.Add("R")
 	rbs.SetClass("RB")
 	rbct.SetClass("RB")
@@ -176,7 +176,7 @@ func (wn *WordNet) Config() {
 
 	// parabelt (PB)
 	cpbs, cpbct, cpbth := net.AddDeep4D("CPB", 5, 3, 5, 5)
-	cpbth.Shape().SetShape([]int{5, 3, 3, 5}, nil, nil) // 2 x 7 units more sensible but 3 x 5 better visually
+	cpbth.Shape().SetShape([]int{5, 3, 2, 7}, nil, nil)
 	cpbth.(*deep.TRCLayer).Drivers.Add("A1")
 	cpbs.SetClass("CPB")
 	cpbct.SetClass("CPBCT")
@@ -186,7 +186,7 @@ func (wn *WordNet) Config() {
 	cpbth.SetName("CPBTh")
 
 	rpbs, rpbct, rpbth := net.AddDeep4D("RPB", 5, 3, 5, 5)
-	rpbth.Shape().SetShape([]int{5, 3, 3, 5}, nil, nil) // 2 x 7 units more sensible but 3 x 5 better visually
+	rpbth.Shape().SetShape([]int{5, 3, 2, 7}, nil, nil)
 	rpbth.(*deep.TRCLayer).Drivers.Add("R")
 	rpbs.SetClass("RPB")
 	rpbct.SetClass("RPBCT")
@@ -197,7 +197,7 @@ func (wn *WordNet) Config() {
 
 	// superior temporal
 	stss, stsct, ststh := net.AddDeep4D("STS", 5, 3, 6, 6)
-	ststh.Shape().SetShape([]int{5, 3, 5, 6}, nil, nil) // 4 x 7 units more sensible but 6 x 5 better visually
+	ststh.Shape().SetShape([]int{5, 3, 4, 7}, nil, nil)
 	ststh.(*deep.TRCLayer).Drivers.Add("A1", "R")
 	stss.SetClass("STS")
 	stsct.SetClass("STSCT")
@@ -207,27 +207,27 @@ func (wn *WordNet) Config() {
 	ststh.SetName("STSTh")
 
 	a1s.SetRelPos(relpos.Rel{Scale: 1.0})
-	rs.SetRelPos(relpos.Rel{Rel: relpos.LeftOf, Other: "A1", XAlign: relpos.Left, Space: 2, Scale: 1.0})
+	rs.SetRelPos(relpos.Rel{Rel: relpos.LeftOf, Other: "A1", XAlign: relpos.Left, Space: 10, Scale: 1.0})
 
-	cbs.SetRelPos(relpos.Rel{Rel: relpos.Behind, Other: "A1", XAlign: relpos.Left, Space: 40})
-	cbct.SetRelPos(relpos.Rel{Rel: relpos.Behind, Other: "CB", XAlign: relpos.Left, XOffset: 0, Space: 15})
-	cbth.SetRelPos(relpos.Rel{Rel: relpos.Behind, Other: "CBCT", XAlign: relpos.Left, XOffset: 0, Space: 15, Scale: 1})
+	cbs.SetRelPos(relpos.Rel{Rel: relpos.Behind, Other: "A1", XAlign: relpos.Left, Space: 50})
+	cbct.SetRelPos(relpos.Rel{Rel: relpos.Behind, Other: "CB", XAlign: relpos.Left, Space: 20})
+	cbth.SetRelPos(relpos.Rel{Rel: relpos.Behind, Other: "CBCT", XAlign: relpos.Left, Space: 20, Scale: 1})
 
-	rbs.SetRelPos(relpos.Rel{Rel: relpos.Behind, Other: "R", XAlign: relpos.Left, Space: 40})
-	rbct.SetRelPos(relpos.Rel{Rel: relpos.Behind, Other: "RB", XAlign: relpos.Left, XOffset: 0, Space: 15})
-	rbth.SetRelPos(relpos.Rel{Rel: relpos.Behind, Other: "RBCT", XAlign: relpos.Left, XOffset: 0, Space: 15, Scale: 1})
+	rbs.SetRelPos(relpos.Rel{Rel: relpos.Behind, Other: "R", XAlign: relpos.Left, Space: 50})
+	rbct.SetRelPos(relpos.Rel{Rel: relpos.Behind, Other: "RB", XAlign: relpos.Left, Space: 20})
+	rbth.SetRelPos(relpos.Rel{Rel: relpos.Behind, Other: "RBCT", XAlign: relpos.Left, Space: 20, Scale: 1})
 
 	cpbs.SetRelPos(relpos.Rel{Rel: relpos.Above, Other: "A1", XAlign: relpos.Left, YAlign: relpos.Front})
-	cpbct.SetRelPos(relpos.Rel{Rel: relpos.Behind, Other: "CPB", XAlign: relpos.Left, XOffset: 0, Space: 15, Scale: 1.0})
-	cpbth.SetRelPos(relpos.Rel{Rel: relpos.Behind, Other: "CPBCT", XAlign: relpos.Left, XOffset: 0, Space: 15, Scale: 1.0})
+	cpbct.SetRelPos(relpos.Rel{Rel: relpos.Behind, Other: "CPB", XAlign: relpos.Left, Space: 20, Scale: 1.0})
+	cpbth.SetRelPos(relpos.Rel{Rel: relpos.Behind, Other: "CPBCT", XAlign: relpos.Left, Space: 20, Scale: 1.0})
 
-	rpbs.SetRelPos(relpos.Rel{Rel: relpos.LeftOf, Other: "CPB", XAlign: relpos.Left, Space: 2, Scale: 1.0})
-	rpbct.SetRelPos(relpos.Rel{Rel: relpos.Behind, Other: "RPB", XAlign: relpos.Left, XOffset: 0, Space: 15, Scale: 1.0})
-	rpbth.SetRelPos(relpos.Rel{Rel: relpos.Behind, Other: "RPBCT", XAlign: relpos.Left, XOffset: 0, Space: 15, Scale: 1.0})
+	rpbs.SetRelPos(relpos.Rel{Rel: relpos.LeftOf, Other: "CPB", XAlign: relpos.Left, Space: 10, Scale: 1.0})
+	rpbct.SetRelPos(relpos.Rel{Rel: relpos.Behind, Other: "RPB", XAlign: relpos.Left, Space: 20, Scale: 1.0})
+	rpbth.SetRelPos(relpos.Rel{Rel: relpos.Behind, Other: "RPBCT", XAlign: relpos.Left, Space: 20, Scale: 1.0})
 
-	stss.SetRelPos(relpos.Rel{Rel: relpos.Behind, Other: "RPBTh", XAlign: relpos.Left, XOffset: 5, Space: 40, Scale: 1.0})
-	stsct.SetRelPos(relpos.Rel{Rel: relpos.Behind, Other: "STS", XAlign: relpos.Left, XOffset: 0, Space: 15, Scale: 1.0})
-	ststh.SetRelPos(relpos.Rel{Rel: relpos.Behind, Other: "STSCT", XAlign: relpos.Left, XOffset: 0, Space: 15, Scale: 1.0})
+	stss.SetRelPos(relpos.Rel{Rel: relpos.Behind, Other: "RPBTh", XAlign: relpos.Left, Space: 20, Scale: 1.0})
+	stsct.SetRelPos(relpos.Rel{Rel: relpos.Behind, Other: "STS", XAlign: relpos.Left, Space: 20, Scale: 1.0})
+	ststh.SetRelPos(relpos.Rel{Rel: relpos.Behind, Other: "STSCT", XAlign: relpos.Left, Space: 20, Scale: 1.0})
 
 	// primary to belt
 	net.ConnectLayers(a1s, cbs, wn.Topo33Skp12Prjn, emer.Forward).SetClass("FwdStd")

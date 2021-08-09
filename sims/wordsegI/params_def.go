@@ -123,7 +123,7 @@ var ParamSets = params.Sets{
 			// prjn classes, specifics
 			{Sel: "Prjn", Desc: "norm and momentum on works better, but wt bal is not better for smaller nets",
 				Params: params.Params{
-					"Prjn.Learn.Lrate":         "0.02",  // .02 seems good
+					"Prjn.Learn.Lrate":         "0.01",  // .02 seems good, .01 used for paper, lower increases slope for pretrain but not for train
 					"Prjn.Learn.Norm.On":       "true",  // false a bit worse with or without momentum (8/20/20)
 					"Prjn.Learn.Momentum.On":   "false", // on significantly increasing hogging
 					"Prjn.Learn.WtBal.On":      "true",  // false worse
