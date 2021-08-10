@@ -2741,6 +2741,7 @@ func (ss *Sim) CmdArgs() {
 		ss.TestAll(&ss.TestEnv)
 	} else {
 		ss.Env = &ss.TrainEnv
+		ss.MaxRuns = 1 // ToDo: somehow this is getting changed - reset here until the problem is located
 		fmt.Printf("Running %d Runs starting at %d\n", ss.MaxRuns, ss.StartRun)
 		ss.TrainEnv.Run.Set(ss.StartRun)
 		ss.TrainEnv.Run.Max = ss.StartRun + ss.MaxRuns
