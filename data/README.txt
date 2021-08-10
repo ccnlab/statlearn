@@ -16,7 +16,7 @@ for example:
 	cp ~/gruntdat/wc/blanca/rohrlich/wordseg/results/active/roh002264/wordseg/WordSeg_Base_*tstEpcTidy.tsv ~/ccnlab/lang-acq/data/Saffran/roh002264
 	cp ~/gruntdat/wc/blanca/rohrlich/wordseg/results/active/roh002264/wordseg/WordSeg_Base_*preTstEpcTidy.tsv ~/ccnlab/lang-acq/data/Saffran/roh002264
 	cd Saffran/roh002264
-        rename -s WordSeg_Base WordSeg * ( add -n for trial run that just prints)
+        rename -s WordSeg_Base WordSeg * ( add -n for trial run that just prints) (brew install rename if you don't have the utility already)
 	
 
 Step 2 - every file has the run number as zero. These need to be changed to match the actual run which is shown in the file name. Use the fixTstRunValues.sh script
@@ -36,4 +36,7 @@ Step 4 - concatenate the pretest and test data WordSeg_*tstEpcTidy.tsv
 	cp WordSeg_0-24_preTstEpcTidy.tsv WordSeg_0-24_prePostTstEpcTidy.tsv (copy pretest data)
 	cat  WordSeg_0-24_tstEpcTidy.tsv >> WordSeg_0-24_prePostTstEpcTidy.tsv (add the test data)
 
-
+Note
+- The runs without pretraining were done after moving over to the hpc2 server and from the "statlearn" project which is the clean copy for public access.
+- The runs with the pretraining were done on the boulder blanca server from the "lang-acq" project. The code is identical.
+- The script is only for the runs with pretraining but the changes for processing the data from the no pretrain runs are simple and obvious
