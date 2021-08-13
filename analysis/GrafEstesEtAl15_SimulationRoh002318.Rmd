@@ -10,7 +10,7 @@ output:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-knitr::opts_knit$set(root.dir = "/Users/rohrlich/go/src/github.com/ccnlab/lang-acq/data/GrafEstes/")
+knitr::opts_knit$set(root.dir = "/Users/rohrlich/go/src/github.com/ccnlab/statlearn/data/GrafEstes/")
 ```
 #### Load Libraries
 ```{r}
