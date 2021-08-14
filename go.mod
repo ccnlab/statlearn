@@ -3,7 +3,7 @@ module github.com/ccnlab/statlearn
 go 1.15
 
 require (
-	github.com/emer/auditory v0.0.0-20210803042306-bba410c610cd
+	github.com/emer/auditory v0.9.1
 	github.com/emer/emergent v1.1.35
 	github.com/emer/empi v1.0.12
 	github.com/emer/etable v1.0.33
